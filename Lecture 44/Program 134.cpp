@@ -1,5 +1,6 @@
 // Circular Linked List
 #include <iostream>
+#include <map>
 using namespace std;
 
 class Node
@@ -114,6 +115,95 @@ bool isCircularList(Node *head)
     }
 
     return false;
+}
+
+bool detectLoop(Node *head)
+{
+    if (head == NULL)
+    {
+        return false;
+    }
+
+    map<Node *, bool> visited;
+    Node *temp = head;
+    while (temp != NULL)
+    {
+        // Cycle is present
+        if (visited[temp] == true)
+        {
+            cout << "Present on element " << temp->data << endl;
+            return true;
+        }
+
+        visited[temp] = true;
+        temp = temp->next;
+    }
+    return false;
+}
+
+// Floyd cycle Algorithm
+bool floydDetectLoop(Node *head)
+{
+    if (head == NULL)
+    {
+        return false;
+    }
+
+    Node *slow = head;
+    Node *fast = head;
+
+    while (slow != NULL && fast != NULL)
+    {
+        fast = fast->next;
+        if (fast != NULL)
+        {
+            fast = fast->next;
+        }
+
+        slow = slow->next;
+
+        if (slow == fast)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Starting Element
+
+Node *getStatingNode(Node *head)
+{
+    if (head == NULL)
+    {
+        return NULL;
+    }
+    Node *intersectin = floydDetectLoop(head);
+    Node *slow = head;
+
+    while (slow != intersectin)
+    {
+        slow = slow->next;
+        intersectin = intersectin->next;
+    }
+
+    return slow;
+}
+
+void removeLoop(Node *head)
+{
+    if (head == NULL)
+    {
+        return;
+    }
+    Node *startOfLoop = getStatingNode(head);
+    Node *temp = startOfLoop;
+
+    while (temp->next != startOfLoop)
+    {
+        temp = temp->next;
+    }
+    temp->next = NULL;
 }
 
 void print(Node *tail)
